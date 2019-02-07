@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
+    crossorigin="anonymous">
+  <link rel="stylesheet" type="text/css" href="styles.css">
+  <title>Hello, world!</title>
+</head>
+
+<!-- Bootstraps -->
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k"
+  crossorigin="anonymous"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js"></script>
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+  crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut"
+  crossorigin="anonymous"></script>
+<!-- maps API -->
+<script src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js">
+</script>
+
+
+
+<body>
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-light" style="margin:5px;">
+    <a class="navbar-brand" href="#">Restap</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+      aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item active">
+          <a class="nav-link" href="#">Restaurant <span class="sr-only">(current)</span></a>
+        </li>
+        <li class="nav-item active">
+          <a class="nav-link" href="">Near Me<span class="sr-only">(current)</span></a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+<!-- FIRST COLUMN -->
+  <div class="row">
+      <div class="column" style="background-color:#aaa;">
+              <div class="col-md-6 col-md-offset-3">
+                <div class="row">
+                  <div id="logo" class="text-center">
+                    <h1>Restap</h1>
+                    <p>Restaurant Finder</p>
+                  </div>
+                  <form role="form" id="form-buscar">
+                    <div class="form-group">
+                      <div class="input-group">
+                        <input id="1" class="form-control" type="text" name="search" placeholder="Search..." required/>
+                        <span class="input-group-btn">
+                          <button class="btn btn-success" type="submit">
+                            <i class="glyphicon glyphicon-search" aria-hidden="true"></i> Search
+                          </button>
+                        </span>
+                      </div>
+                    </div>
+                  </form>
+                  <!-- THIRD COLUMN -->
+              </div>
+              <h3 id="mapcontainer">Locations</h3>
+              <!-- MAPS -->
+              </div>
+                <div id="map"></div>
+              <div>
+            </div>
+      </div>
+
+<!-- SECOND COLUMN -->
+      <div class="column2" style="background-color:#bbb;">
+        <h2>List of Restaurants</h2>
+        <p>Some text..</p>
+        <p>Some text..</p>
+        <p>Some text..</p>
+        <p>Some text..</p>
+        <p>Some text..</p>
+        <p>Some text..</p>
+        <p>Some text..</p>
+        <p>Some text..</p>
+        <p>Some text..</p>
+        <p>Some text..</p>  
+      </div>
+  </div>
+
+
+  <!--  -->
+
+  <script>
+    // maps
+    var locations = []; //locations in array
+
+    function initMap() {
+      var options = {
+        zoom: 8,
+        center: { lat: 46.1805, lng: -96.8283 }, //jakarta
+        mapTypeId: google.maps.MapTypeId.ROADMAP
+      }
+      var map = new google.maps.Map(document.getElementById('map'), options);
+      locations.forEach(e => {
+        addMarker(e.coords)
+        var infoWindow = new google.maps.InfoWindow({
+          content: e.name
+        })
+        marker.addListener('click', function () {
+          infoWindow.open(map, marker);
+        })
+
+      });
+    }
+
+    function addMarker(coords) {
+      var marker = new google.maps.Marker({
+        position: coords,
+        map: map
+      })
+    }
+
+    // $('#maps').hide();
+
+
+
+  </script>
+  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBCYMaN1X8XKVc1ZtW1FVZAJgCGDbqs5VY&callback=initMap">
+  </script>
+</body>
+
+</html>
