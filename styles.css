@@ -8,7 +8,8 @@
 /* Maps */
 #mapcontainer {
   padding-top: 50%;
-  float: center;
+  margin-left: inherit;
+  color: grey;
 }
 
 #map {
@@ -79,7 +80,7 @@ width:100%;
 
 .column2 {
   float: left;
-  width: 67%;
+  width: 66%;
   padding: 10px;
   height: 800px;
   margin-left: 5px;
