@@ -1,0 +1,102 @@
+* {
+  -webkit-border-radius: 1px !important;
+     -moz-border-radius: 1px !important;
+          border-radius: 1px !important;
+          font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif
+}
+
+/* Maps */
+#mapcontainer {
+  padding-top: 50%;
+  float: center;
+}
+
+#map {
+  height: 50%; 
+  width: 100%;
+  float: center;
+ }
+
+ html, body {
+  height: 100%;
+  margin: 10px;
+  padding: 0;
+}
+
+/* search */
+#logo {
+color: #666;
+width:100%;   
+}
+#logo h1 {
+    font-size: 60px;
+    text-shadow: 1px 2px 3px #999;
+    font-family: Roboto, sans-serif;
+    font-weight: 700;
+    letter-spacing: -1px;
+}
+#logo p{
+  padding-bottom: 20px;
+}
+
+
+#form-buscar >.form-group >.input-group > .form-control {
+    height: 40px;
+}
+#form-buscar >.form-group >.input-group > .input-group-btn > .btn{
+        height: 40px; 
+        font-size: 16px;
+        font-weight: 300; 
+         
+       
+}
+#form-buscar >.form-group >.input-group > .input-group-btn > .btn .glyphicon{
+ margin-right:12px;   
+}    
+
+
+#form-buscar >.form-group >.input-group > .form-control {
+    font-size: 16px;
+    font-weight: 300;
+   
+}
+
+#form-buscar >.form-group >.input-group > .form-control:focus {
+  border-color: #33A444;
+  outline: 0;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 1px rgba(0, 109, 0, 0.8);
+          box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 1px rgba(0, 109, 0, 0.8);
+}
+
+/* Column */
+.column {
+  float: left;
+  width: 30%;
+  padding: 10px;
+  height: 800px;
+  margin-left: 20px;
+}
+
+.column2 {
+  float: left;
+  width: 67%;
+  padding: 10px;
+  height: 800px;
+  margin-left: 5px;
+  overflow: auto;
+}
+
+.column3 {
+  height: 500px;
+  width: 20%;
+  margin-left: 5px;
+  margin-top: 5px;
+  padding-top: 20px !important;
+  background-color: black;
+}
+
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
