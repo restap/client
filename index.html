@@ -93,6 +93,9 @@
               </form>
               <!-- THIRD COLUMN -->
             </div>
+            <div class="duration">
+              
+            </div>
             <div id="mapcontainer">
               <h3>Locations</h3>
             </div>
@@ -116,13 +119,11 @@
 
 
       <script>
-
         //SEARCH
         $('#form-buscar').submit(function (event) {
           event.preventDefault();
           $.get(`http://localhost:3000/zomato/${$(`#1`).val()}`)
             .done(response => {
-
               $(document).ready(function () {
                 return $.get(`http://localhost:3000/zomato/${response.coords.lat}/${response.coords.lng}`)
                   .done((data) => {
@@ -140,7 +141,7 @@
                       $('#restaurants').append(`
                         <div style="background-color:white;text-align:left;height:200px">
                             <div style="float:right">       
-                              <img src="${pics}" width="200" height="200" text-align:"left"> 
+                              <img id = "address" src="${pics}" width="200" height="200" text-align:"left"> 
                             </div>
                           <div style="margin:10px;">
                             <h3><underline>${r.restaurant.name}</underline></h3>
@@ -148,26 +149,46 @@
                             <h5><strong>User Rating</strong> : ${r.restaurant.user_rating.aggregate_rating} / 5</h5>
                             <h5><strong>Average cost for two</strong> : ${r.restaurant.average_cost_for_two}</h5>
                             <h5><strong>Currency</strong> : ${r.restaurant.currency}</h5>
-                            <h5 class="address"><strong>Location</strong> : ${r.restaurant.location.address}</h5>
+                            <h5 class="address" id ="${r.restaurant.location.address}"><strong>Location</strong> : ${r.restaurant.location.address}</h5>
                           <div>
                           <br>
                         </div>
                     `)
-                    });
+                    })
+                    $("#origin").submit(function(event) {
+                      event.preventDefault()
+                      let origin = $("#origin-routes").val()
+                      $("img#address").click(function() {
+                        let destination = $('.address').get(0).id
+                        $.get(`http://localhost:3000/zomato/${origin}/to/${destination}`)
+                        .done(data => {
+                        let distance = data.distance
+                        let duration = data.duration
+                        let origin = data.origin
+                        let destination = data.destination
+                          initMapRoutes(origin, destination)
+                          $('.duration').append(`
+                          <p>Distance : ${distance}</p>
+                          <p>Duration :${duration}</p>
+                  
+                          `)
+                        })
+                        .fail(err => {
+                          console.log(err)
+                        })
+                      })
+                    })
                   })
-              })
 
+              })
               // initMap(response);
               // console.log(`http://localhost:3000/zomato/${currentLocation.coords.lat}/${currentLocation.coords.lng}`)
               // console.log(response)
             })
             .fail(err => {
-
+              console.log(err)
             })
         })
-
-        // LIST Restaurants
-
 
         //GOOGLE SIGN IN
         if (localStorage.getItem('token')) {
@@ -183,7 +204,6 @@
             .fail(err => {
               $(`#wrong-token`).append(`<p>you put wrong token</p>`)
               console.log(err);
-
             })
         }
 
@@ -209,33 +229,33 @@
         }
 
         // GOOGLE MAPS -- get geolocation
-        // function initMap(data) {
-        //   let coords = null;
-        //   let address = null;
+        function initMap(data) {
+          let coords = null;
+          let address = null;
 
-        //   if (!data) {
-        //     coords = { lat: -6.301220, lng: 106.796778 }
-        //     address = `Jakarta City, Indonesia`;
-        //   } else {
-        //     coords = data.coords;
-        //     address = data.address;
-        //   }
+          if (!data) {
+            coords = { lat: -6.301220, lng: 106.796778 }
+            address = `Jakarta City, Indonesia`;
+          } else {
+            coords = data.coords;
+            address = data.address;
+          }
 
-        //   options = {
-        //     zoom: 12,
-        //     center: coords,
-        //     mapTypeId: google.maps.MapTypeId.ROADMAP
-        //   }
-        //   var map = new google.maps.Map(document.getElementById('map'), options);
+          options = {
+            zoom: 12,
+            center: coords,
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+          }
+          var map = new google.maps.Map(document.getElementById('map'), options);
 
-        //   var infoWindow = new google.maps.InfoWindow({ 
-        //     content: `${address}`
-        //   })
+          var infoWindow = new google.maps.InfoWindow({ 
+            content: `${address}`
+          })
 
-        //   //starting point
-        //   addMarker(coords, map);
-        //   // addMarker({ lat: -6.301220, lng: 106.796778 }, map);
-        // }
+          //starting point
+          addMarker(coords, map);
+          // addMarker({ lat: -6.301220, lng: 106.796778 }, map);
+        }
 
         function addMarker(coords, map) {
           var marker = new google.maps.Marker({
@@ -248,11 +268,34 @@
           });
         }
 
+        function initMapRoutes(origin, destination) {
+        var directionsService = new google.maps.DirectionsService;
+        var directionsDisplay = new google.maps.DirectionsRenderer;
+        options = {
+          zoom: 12,
+          center: origin,
+          mapTypeId: google.maps.MapTypeId.ROADMAP
+        }
+        var map = new google.maps.Map(document.getElementById('map'), options);
+        directionsDisplay.setMap(map);
+          calculateAndDisplayRoute(directionsService, directionsDisplay, origin, destination);
+        }
 
-
+      function calculateAndDisplayRoute(directionsService, directionsDisplay, origin , destination) {
+        directionsService.route({
+          origin: origin,
+          destination: destination,
+          travelMode: 'DRIVING'
+        }, function(response, status) {
+          if (status === 'OK') {
+            directionsDisplay.setDirections(response);
+          } else {
+            window.alert('Directions request failed due to ' + status);
+          }
+        });
+      }
       </script>
-      <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBCYMaN1X8XKVc1ZtW1FVZAJgCGDbqs5VY&callback=initMap">
-      </script>
+      <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBCYMaN1X8XKVc1ZtW1FVZAJgCGDbqs5VY&callback=initMap"></script>
 
   </body>
 
