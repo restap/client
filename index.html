@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="google-signin-client_id" content="55756582365-n6paiep178nvng2rv515hvrk13sehms7.apps.googleusercontent.com">
+
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
+    crossorigin="anonymous">
+  <link rel="stylesheet" type="text/css" href="styles.css">
+
+  <!-- JQuery -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js"></script>
+
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+  <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut"
+    crossorigin="anonymous"></script>
+
+  <!-- Bootstraps -->
+  <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+  <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k"
+    crossorigin="anonymous"></script>
+
+  <!-- maps API -->
+  <script src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js">
+  </script>
+  <script src="https://apis.google.com/js/platform.js" async defer></script>
+
+</head>
+
+
+<body>
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-light" style="margin:5px;">
+    <a class="navbar-brand" href="#">Home</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+      aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto float-right">
+        <li class="nav-item active">
+          <!-- GOOGLE SIGN IN -->
+          <div class="g-signin2" data-onsuccess="onSignIn"></div>
+          <!-- SIGN OUT -->
+          <a class="signout" href="" onclick="signOut();">Sign out</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- FIRST COLUMN -->
+  <div class="row">
+      <div class="column" style="background-color:white;">
+        <div class="col-md-6 col-md-offset-3">
+          <div class="row">
+            <div id="logo" class="text-center">
+              <h1>Restap</h1>
+              <p>Restaurant Finder</p>
+            </div>
+            <form role="form" id="form-buscar">
+              <div class="form-group">
+                <div class="input-group">
+                  <input id="1" class="form-control" type="text" name="search" placeholder="Search..." required/>
+                  <span class="input-group-btn">
+                    <button class="btn btn-success" type="submit">
+                      <i class="glyphicon glyphicon-search" aria-hidden="true"></i> Search
+                    </button>
+                  </span>
+                </div>
+              </div>
+            </form>
+
+            <form role="form" id="origin">
+              <div class="form-group">
+                <div class="input-group">
+                  <input id="origin-routes" class="form-control" type="text" name="search" placeholder="Origin..." required/>
+                  <span class="input-group-btn">
+                    <button class="btn btn-success" type="submit">
+                      <i class="glyphicon glyphicon-search" aria-hidden="true"></i> origin
+                    </button>
+                  </span>
+                </div>
+              </div>
+            </form>
+            <!-- THIRD COLUMN -->
+          </div>
+          <div class="duration">
+            
+          </div>
+          <div id="mapcontainer">
+            <h3>Locations</h3>
+          </div>
+
+          <!-- MAPS -->
+        </div>
+        <div id="map"></div>
+        <div>
+        </div>
+      </div>
+
+      <!-- SECOND COLUMN -->
+      <div class="column2" style="background-color:rgb(233, 241, 250);">
+        <h2>List of Restaurants</h2>
+        <div id="restaurants">
+          <div id="border"></div>
+        </div>
+
+      </div>
+    </div>
+
+        <script>
+          //SEARCH
+          $('#form-buscar').submit(function (event) {
+            event.preventDefault();
+            return $.get(`http://localhost:3000/zomato/${$(`#1`).val()}`)
+              .done(response => {
+                initMap(response)
+
+                  $.get(`http://localhost:3000/zomato/${response.coords.lat}/${response.coords.lng}`)
+                    .done((data) => {
+                      console.log(data);
+                      $(`#restaurants`).empty();
+                      data.forEach(r => {
+                        let pics = null;
+                        if (r.restaurant.featured_image === "") {
+                          pics = `https://previews.123rf.com/images/petitelili/petitelili1506/petitelili150600043/41899795-seamless-modern-background-with-hand-drawn-cartoon-objects-on-chinese-food-theme-rice-teapot-chinese.jpg`;
+                        } else {
+                          pics = r.restaurant.featured_image
+                        }
+
+                        // <img src="${pics}" alt="display" width="200" height="200" align="right">
+                        $('#restaurants').append(`
+                        <div style="background-color:white;text-align:left;height:200px">
+                            <div style="float:right">       
+                              <img id = "address" src="${pics}" width="200" height="200" text-align:"left"> 
+                            </div>
+                          <div style="margin:10px;">
+                            <h3><underline>${r.restaurant.name}</underline></h3>
+                            <h5><strong>Cuisines</strong> : ${r.restaurant.cuisines}</h5>
+                            <h5><strong>User Rating</strong> : ${r.restaurant.user_rating.aggregate_rating} / 5</h5>
+                            <h5><strong>Average cost for two</strong> : ${r.restaurant.average_cost_for_two}</h5>
+                            <h5><strong>Currency</strong> : ${r.restaurant.currency}</h5>
+                            <h5 class="address" id ="${r.restaurant.location.address}"><strong>Location</strong> : ${r.restaurant.location.address}</h5>
+                          <div>
+                          <br>
+                        </div>
+                    `)
+                      })
+                      $("#origin").submit(function (event) {
+                        event.preventDefault()
+                        let origin = $("#origin-routes").val()
+                        $("img#address").click(function () {
+                          let destination = $('.address').get(0).id
+                          return $.get(`http://localhost:3000/zomato/${origin}/to/${destination}`)
+                            .done(data => {
+                              $('.duration').empty();
+                              let distance = data.distance
+                              let duration = data.duration
+                              let origin = data.origin
+                              let destination = data.destination
+                              initMapRoutes(origin, destination)
+                              $('.duration').append(`
+                          <p>Distance : ${distance}</p>
+                          <p>Duration :${duration}</p>
+                  
+                          `)
+                            })
+                            // .fail(err => {
+                            //   swal(`Oops! kejauhan`)
+                            //   console.log(err)
+                            // })
+                        })
+                      })
+                    })
+                    .fail(err => {
+                      swal(`Oops! Coming soon to your city`)
+                    })
+                // })
+              })
+              .fail(err => {
+                swal(`Oops! Coming soon to your city`)
+                console.log(err)
+              })
+          })
+
+          //GOOGLE SIGN IN
+          function show() {
+            $(document).ready(function () {
+              $('.row').show();
+              $('.g-signin2').hide();
+              $('.signout').show();
+            });
+          }
+
+          function hide() {
+            $(document).ready(function () {
+              $('.row').hide();
+              $('.g-signin2').show();
+              $('.signout').hide();
+            });
+          }
+
+          if (localStorage.getItem('token')) {
+            $.post('http://localhost:3000/verify', { token: localStorage.getItem('token') })
+              .done(response => {
+                if (response.action == true) {
+                  show();
+                }
+              })
+              .fail(err => {
+                hide();
+              })
+          } else {
+            hide()
+          }
+
+          function access() {
+            if (localStorage.getItem('token')) {
+              $.post('http://localhost:3000/verify', { token: localStorage.getItem('token') })
+                .done(response => {
+                  if (response.action == true) {
+                    show()
+                  }
+                })
+                .fail(err => {
+                  hide()
+                })
+            } else {
+              hide()
+            }
+          }
+
+          function onSignIn(googleUser) {
+            var id_token = googleUser.getAuthResponse().id_token
+            $.post('http://localhost:3000/googleSignUp', { id_token })
+              .done(response => {
+                localStorage.setItem('token', response.data)
+                access()
+              })
+              .fail(err => {
+                console.log(err), "======================";
+
+              })
+          }
+
+
+          function signOut() {
+            var auth2 = gapi.auth2.getAuthInstance();
+            console.log(auth2)
+            auth2.signOut().then(function () {
+              console.log('User signed out.');
+              localStorage.removeItem('token')
+              access()
+            })
+            $('#front-page').empty()
+          }
+
+
+          // GOOGLE MAPS -- get geolocation
+          function initMap(data) {
+            let coords = null;
+            let address = null;
+
+            if (!data) {
+              coords = { lat: -6.301220, lng: 106.796778 }
+              address = `Jakarta City, Indonesia`;
+            } else {
+              coords = data.coords;
+              address = data.address;
+            }
+
+            options = {
+              zoom: 12,
+              center: coords,
+              mapTypeId: google.maps.MapTypeId.ROADMAP
+            }
+            var map = new google.maps.Map(document.getElementById('map'), options);
+
+            var infoWindow = new google.maps.InfoWindow({
+              content: `${address}`
+            })
+
+            //starting point
+            addMarker(coords, map);
+          }
+
+          function addMarker(coords, map) {
+            var marker = new google.maps.Marker({
+              position: coords,
+              map: map
+            })
+          }
+
+
+          //MAP ROUTES
+          function initMapRoutes(origin, destination) {
+            var directionsService = new google.maps.DirectionsService;
+            var directionsDisplay = new google.maps.DirectionsRenderer;
+            options = {
+              zoom: 12,
+              center: origin,
+              mapTypeId: google.maps.MapTypeId.ROADMAP
+            }
+            var map = new google.maps.Map(document.getElementById('map'), options);
+            directionsDisplay.setMap(map);
+            calculateAndDisplayRoute(directionsService, directionsDisplay, origin, destination);
+          }
+
+          function calculateAndDisplayRoute(directionsService, directionsDisplay, origin, destination) {
+            directionsService.route({
+              origin: origin,
+              destination: destination,
+              travelMode: 'DRIVING'
+            }, function (response, status) {
+              if (status === 'OK') {
+                directionsDisplay.setDirections(response);
+              } else {
+                window.alert('Directions request failed due to ' + status);
+              }
+            });
+          }
+
+        </script>
+        <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBCYMaN1X8XKVc1ZtW1FVZAJgCGDbqs5VY&callback=initMap"></script>
+
+</body>
+
+</html>
