@@ -1,3 +1,80 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Page Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
+    <script src="main.js"></script>
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+    <meta name="google-signin-client_id" content="55756582365-n6paiep178nvng2rv515hvrk13sehms7.apps.googleusercontent.com">
+
+</head>
+
+<body>
+
+    <div class="g-signin2" data-onsuccess="onSignIn"></div>
+
+    <a href="#" onclick="signOut();">Sign out</a>
+
+
+    <div id="front-page">
+       
+    </div>
+
+    <div id="wrong-token">
+        
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/1.9.0/showdown.min.js"></script>
+    <script>
+
+        if (localStorage.getItem('token')) {
+            $.post('http://localhost:3000/verify', {token : localStorage.getItem('token')})
+                .done(response => {
+                    if(response.action == true) {
+                        $('#front-page').append(` <p>you hae acccessss toooo</p>`)
+                    } else {
+                        $('#front-page').empty()
+                        $(`#wrong-token`).append(`<p>you put wrong token</p>`)
+                    }
+                })
+                .fail(err => {
+                    $(`#wrong-token`).append(`<p>you put wrong token</p>`)
+                    console.log(err);
+                    
+                })
+        }
+        function onSignIn(googleUser) {
+            var id_token = googleUser.getAuthResponse().id_token
+            $.post('http://localhost:3000/googleSignUp', { id_token })
+                .done(response => {
+                    localStorage.setItem('token', response.data)
+                    $('#front-page').append(` <p>you have acccessss</p>`)
+                })
+                .fail(err => {
+                    console.log(err), "======================";
+
+                })
+        }
+
+
+        function signOut() {
+            var auth2 = gapi.auth2.getAuthInstance();
+            auth2.signOut().then(function () {
+                console.log('User signed out.');
+                localStorage.removeItem('token')
+            })
+            $('#front-page').empty()
+        }
+
+
+
+    </script>
 <!doctype html>
 <html lang="en">
 
@@ -163,6 +240,7 @@
   </script>
   <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBCYMaN1X8XKVc1ZtW1FVZAJgCGDbqs5VY&callback=initMap">
   </script>
+
 </body>
 
 </html>
