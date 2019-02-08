@@ -147,6 +147,19 @@
               </div>
             </div>
           </form>
+
+          <form role="form" id="origin">
+            <div class="form-group">
+              <div class="input-group">
+                <input id="origin-routes" class="form-control" type="text" name="search" placeholder="Origin..." required/>
+                <span class="input-group-btn">
+                  <button class="btn btn-success" type="submit">
+                    <i class="glyphicon glyphicon-search" aria-hidden="true"></i> origin
+                  </button>
+                </span>
+              </div>
+            </div>
+          </form>
           <!-- THIRD COLUMN -->
         </div>
         <div id="mapcontainer">
@@ -163,66 +176,96 @@
     <!-- SECOND COLUMN -->
     <div class="column2" style="background-color:#bbb;">
       <h2>List of Restaurants</h2>
-      <p>Some text..</p>
-      <p>Some text..</p>
-      <p>Some text..</p>
-      <p>Some text..</p>
-      <p>Some text..</p>
-      <p>Some text..</p>
-      <p>Some text..</p>
-      <p>Some text..</p>
-      <p>Some text..</p>
-      <p>Some text..</p>
+      <div id="restaurants">
+        <div id="border"></div>
+      </div>
+
     </div>
   </div>
 
 
   <script>
-    // GOOGLE MAPS -- get geolocation
+
+    //SEARCH
     $('#form-buscar').submit(function (event) {
       event.preventDefault();
       $.get(`http://localhost:3000/zomato/${$(`#1`).val()}`)
         .done(response => {
 
-          initMap(response);
-          console.log(response)
+          $(document).ready(function () {
+            return $.get(`http://localhost:3000/zomato/${response.coords.lat}/${response.coords.lng}`)
+              .done((data) => {
+                console.log(data);
+                $(`#restaurants`).empty();
+                data.forEach(r => {
+                  let pics = null;
+                  if (r.restaurant.featured_image === "") {
+                    pics = `https://previews.123rf.com/images/petitelili/petitelili1506/petitelili150600043/41899795-seamless-modern-background-with-hand-drawn-cartoon-objects-on-chinese-food-theme-rice-teapot-chinese.jpg`;
+                  } else {
+                    pics = r.restaurant.featured_image
+                  }
+
+                  // <img src="${pics}" alt="display" width="200" height="200" align="right">
+                  $('#restaurants').append(`
+                    <div style="background-color:white;text-align:left;height:200px">
+                        <div style="float:right">       
+                          <img src="${pics}" width="200" height="200" text-align:"left"> 
+                        </div>
+                      <div style="margin:10px;">
+                        <h3><underline>${r.restaurant.name}</underline></h3>
+                        <h5><strong>Cuisines</strong> : ${r.restaurant.cuisines}</h5>
+                        <h5><strong>User Rating</strong> : ${r.restaurant.user_rating.aggregate_rating} / 5</h5>
+                        <h5><strong>Average cost for two</strong> : ${r.restaurant.average_cost_for_two}</h5>
+                        <h5><strong>Currency</strong> : ${r.restaurant.currency}</h5>
+                        <h5 class="address"><strong>Location</strong> : ${r.restaurant.location.address}</h5>
+                      <div>
+                      <br>
+                    </div>
+                `)
+                });
+              })
+          })
+
+          // initMap(response);
+          // console.log(`http://localhost:3000/zomato/${currentLocation.coords.lat}/${currentLocation.coords.lng}`)
+          // console.log(response)
         })
         .fail(err => {
 
         })
     })
 
-    // $.get(`http://localhost:3000/zomato/?place=${address}`)
-    //   .done()
-    //   .fail()
+    // LIST Restaurants
 
-    function initMap(data) {
-      let coords = null;
-      let address = null;
 
-      if (!data) {
-        coords = { lat: -6.301220, lng: 106.796778 }
-        address = `Jakarta City, Indonesia`;
-      } else {
-        coords = data.coords;
-        address = data.address;
-      }
+    // GOOGLE MAPS -- get geolocation
+    // function initMap(data) {
+    //   let coords = null;
+    //   let address = null;
 
-      options = {
-        zoom: 12,
-        center: coords,
-        mapTypeId: google.maps.MapTypeId.ROADMAP
-      }
-      var map = new google.maps.Map(document.getElementById('map'), options);
+    //   if (!data) {
+    //     coords = { lat: -6.301220, lng: 106.796778 }
+    //     address = `Jakarta City, Indonesia`;
+    //   } else {
+    //     coords = data.coords;
+    //     address = data.address;
+    //   }
 
-      var infoWindow = new google.maps.InfoWindow({ 
-        content: `${address}`
-      })
+    //   options = {
+    //     zoom: 12,
+    //     center: coords,
+    //     mapTypeId: google.maps.MapTypeId.ROADMAP
+    //   }
+    //   var map = new google.maps.Map(document.getElementById('map'), options);
 
-      //starting point
-      addMarker(coords, map);
-      // addMarker({ lat: -6.301220, lng: 106.796778 }, map);
-    }
+    //   var infoWindow = new google.maps.InfoWindow({ 
+    //     content: `${address}`
+    //   })
+
+    //   //starting point
+    //   addMarker(coords, map);
+    //   // addMarker({ lat: -6.301220, lng: 106.796778 }, map);
+    // }
 
     function addMarker(coords, map) {
       var marker = new google.maps.Marker({
